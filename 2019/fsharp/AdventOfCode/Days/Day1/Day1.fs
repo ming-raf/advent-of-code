@@ -1,18 +1,17 @@
-namespace AdventOfCode
+namespace AdventOfCode.Days.Day1
     module Day =
         open System
-        open System.IO
-        open AdventDay
+        open AdventOfCode.Days.DataStructure
 
         let calculateFuel (mass : int) : int =
             int(Math.Floor(float(mass / 3))) - 2
 
-        let readInput filePath = seq<int> {
-            for line in File.ReadLines filePath do
-                yield int line }
+        type Day1(filePath) =
+            inherit AdventDayBase(filePath)
 
-        type Day1() =
             interface IAdventDay with
-                member this.Result =
-                    readInput("input.txt")
-                    |> Seq.sumBy(calculateFuel)
+                member this.PrintResults =
+                    let totalFuel = this.ReadInput()
+                                    |> Seq.sumBy(calculateFuel)
+                    printfn "Total Fuel: %d" totalFuel
+                    ()
