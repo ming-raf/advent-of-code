@@ -1,12 +1,7 @@
 ﻿namespace AdventOfCode
-
-open System
-
-module AdventDay =
-    type IAdventDay =
-        abstract Result : string
-
-[<EntryPoint>]
-let main argv =
-    printfn ""
-    0
+module Main =
+    [<EntryPoint>]
+    let main argv =
+        let day1 = Day.Day1()
+        printfn "%d" (day1 :> AdventDay.IAdventDay).Result
+        0

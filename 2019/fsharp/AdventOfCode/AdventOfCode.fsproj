@@ -4,10 +4,11 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Program.fs" />
-    <Content Include="input.txt">
+    <Content Include="Days/Day1/input.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Compile Include="IAdventDay.fs" />
+    <Compile Include="Days/IAdventDay.fs" />
+    <Compile Include="Days/Day1/Day1.fs" />
+    <Compile Include="Program.fs" />
   </ItemGroup>
 </Project>
