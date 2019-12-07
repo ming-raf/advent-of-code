@@ -7,7 +7,7 @@ namespace AdventOfCode.Days
 
         [<AbstractClass>]
         type AdventDayBase(filePath: string) =
-            
+
             member this.ReadInput() = seq<int> {
                 for line in File.ReadLines filePath do
                     yield int line }
