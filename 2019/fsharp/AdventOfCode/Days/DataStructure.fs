@@ -13,6 +13,8 @@ namespace AdventOfCode.Days
                 for line in File.ReadLines filePath do
                     yield int line }
 
-            member this.ReadInputText() = File.ReadAllText(filePath)
+            member this.ReadCommaSeparated() = (File.ReadAllText(filePath).Split ',')
+                                               |> Array.map (int)
+                                               |> Array.toList
 
 
