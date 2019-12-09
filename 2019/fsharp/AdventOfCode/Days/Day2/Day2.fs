@@ -4,13 +4,6 @@
         open System
         open AdventOfCode.Days.DataStructure
 
-        let rec getOp (lst: list<int>) (ret: list<int>) (current: int): list<int> =
-            match lst with
-            | [] -> List.rev ret
-            | head::tail when Seq.contains current { 0 .. 1 }  -> getOp tail (head::ret) (current + 1)
-            | head::tail when current = 2 -> List.rev(head::ret)
-            | head::tail -> getOp tail ret (current + 1)
-
         let rec replaceValue (lst: list<int>) (acc: list<int>) (value: int) (replIndex: int) (currIndex: int) : list<int> =
             match lst with
             | [] -> []
@@ -29,29 +22,23 @@
                 | head::tail when currSteps <= steps -> skipped tail (head::acc) steps (currSteps + 1)
                 | _ -> List.rev acc
 
-        // Feels like this is a shit way of solving this
         let intCode input =
             let rec evaluate input prev skipTimes =
                 match input with
                 | [] -> []
-                | head::tail when head = 1 || head = 2 -> let op = getOp tail [] 0;
-                                                          //printfn "Add: %A" op;
-                                                          let first = (prev @ input).[op.[0]]
-                                                          let second = (prev @ input).[op.[1]]
+                | head::tail when head = 1 || head = 2 -> let first = (prev @ input).[tail.[0]]
+                                                          let second = (prev @ input).[tail.[1]]
                                                           let newValue = if head = 1 then (first + second) else (first * second)
-                                                          let outResult = replaceValue (prev @ input) [] newValue op.[2] 0;
-                                                          //printfn "Result: %A" outResult;
+                                                          let outResult = replaceValue (prev @ input) [] newValue tail.[2] 0;
                                                           let newTail = skipTo outResult skipTimes 0;
-                                                          //printfn "Skip: %A" newTail;
                                                           let skippedVals = skipped outResult [] skipTimes 0;
-                                                          //printfn "Skipped: %A" skippedVals;
                                                           if List.isEmpty newTail then outResult else evaluate newTail skippedVals (skipTimes + 4)
                 | head::tail when head = 99 -> prev @ input
                 | _ -> input
             evaluate input [] 3
 
         let findNounVerb input =
-            let rec repl input expected noun verb : list<int> =
+            let rec getPossibleValues input expected noun verb : list<int> =
                 let x = replaceValue input [] noun 1 0;
                 let y = replaceValue x [] verb 2 0;
                 let z = intCode y
@@ -59,10 +46,10 @@
                 | [] -> []
                 | z when z.[0] = expected -> [noun; verb]
                 | z when noun = 99 && verb = 99 -> []
-                | z when verb = 99 -> repl input expected (noun + 1) 0
-                | z when noun = 99 -> repl input expected 0 (verb + 1)
-                | _ -> repl input expected noun (verb + 1)
-            let ret = (repl input 19690720 0 0)
+                | z when verb = 99 -> getPossibleValues input expected (noun + 1) 0
+                | z when noun = 99 -> getPossibleValues input expected 0 (verb + 1)
+                | _ -> getPossibleValues input expected noun (verb + 1)
+            let ret = (getPossibleValues input 19690720 0 0)
             100 * ret.[0] + ret.[1]
 
         type Day2(filePath) =
