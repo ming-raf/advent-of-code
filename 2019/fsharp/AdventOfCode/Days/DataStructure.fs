@@ -1,4 +1,5 @@
 namespace AdventOfCode.Days
+
     module DataStructure =
         open System.IO
 
@@ -8,7 +9,12 @@ namespace AdventOfCode.Days
         [<AbstractClass>]
         type AdventDayBase(filePath: string) =
 
-            member this.ReadInput() = seq<int> {
+            member this.ReadInputLines() = seq<int> {
                 for line in File.ReadLines filePath do
                     yield int line }
+
+            member this.ReadCommaSeparated() = (File.ReadAllText(filePath).Split ',')
+                                               |> Array.map (int)
+                                               |> Array.toList
+
 

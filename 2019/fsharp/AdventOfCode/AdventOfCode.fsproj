@@ -1,14 +1,15 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <Content Include="Days/Day1/input.txt">
+    <Content Include="Days\Day1\input.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Compile Include="Days\DataStructure.fs" />
-    <Compile Include="Days/Day1/Day1.fs" />
+    <Compile Include="Days\Day1\Day1.fs" />
+    <Compile Include="Days\Day2\Day2.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 </Project>
