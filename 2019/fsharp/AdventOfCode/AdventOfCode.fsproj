@@ -7,9 +7,13 @@
     <Content Include="Days\Day1\input.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Days\Day2\input.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Compile Include="Days\DataStructure.fs" />
     <Compile Include="Days\Day1\Day1.fs" />
     <Compile Include="Days\Day2\Day2.fs" />
+    <Compile Include="Days\Day3\Day3.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 </Project>
