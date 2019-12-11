@@ -18,8 +18,9 @@
             member this.A: int = point1.Y - point2.Y
             member this.B: int = point2.X - point1.X
             member this.C: int = -((point1.X * point2.Y) - (point2.X * point1.Y))
+            member this.GetSteps = Math.Abs(point1.X - point2.X) + Math.Abs(point1.Y - point2.Y)
 
-        type Segment(line1: Line, line2: Line) =
+        type Intersect(line1: Line, line2: Line) =
             member this.Line1: Line = line1
             member this.Line2: Line = line2
 
@@ -89,22 +90,42 @@
             //printfn "%A" result
             result
 
-        let doShit input1 input2 =
+        let getIntersections input1 input2 =
             let t1 = traverse input1
             let t2 = traverse input2
-            let intersections = seq {for i in 0 .. (t1.Length - 2) do
-                                        for j in 0 .. (t2.Length - 2) do
-                                            let line1 = Line(t1.[i], t1.[i + 1]);
-                                            let line2 = Line(t2.[j], t2.[j + 1]);
-                                            let segment = Segment(line1, line2)
-                                            let intersection = segment.CalculateSegmentIntersection;
-                                            yield intersection }
+            seq {for i in 0 .. (t1.Length - 2) do
+                    for j in 0 .. (t2.Length - 2) do
+                        let line1 = Line(t1.[i], t1.[i + 1]);
+                        let line2 = Line(t2.[j], t2.[j + 1]);
+                        let intersect = Intersect(line1, line2)
+                        let intersection = intersect.CalculateSegmentIntersection;
+                        yield intersection }
+
+        let rec union (points1: list<Point>) (points2: list<Point>) =
+            match points2 with
+            | [] -> points1
+            | head::tail when
+
+        let doShit input1 input2 =
+            let intersections = getIntersections input1 input2
+            let t1 = traverse input1
+            let t2 = traverse input2
+            seq {for i in 0 .. (t1.Length - 2) do
+                    for j in 0 .. (t2.Length - 2) do
+                        let line1 = Line(t1.[i], t1.[i + 1]);
+                        let line2 = Line(t2.[j], t2.[j + 1]);
+
+
             let minDistance = intersections
                               |> Seq.filter (isNull >> not)
                               |> Seq.filter (fun point -> point.X <> 0 && point.Y <> 0)
                               |> Seq.map (fun point -> Math.Abs(point.X) + Math.Abs(point.Y))
                               |> Seq.min
             minDistance
+
+        let doShit2 input1 input2 =
+            let intersections = getIntersections input1 input2
+
 
         type Day3(filePath) =
             inherit AdventDayBase(filePath)
