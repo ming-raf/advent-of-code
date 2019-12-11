@@ -55,11 +55,11 @@
         type Day2(filePath) =
             inherit AdventDayBase(filePath)
                 member this.PartOneInput =
-                    let input = this.ReadCommaSeparated()
+                    let input = this.ReadCommaSeparated
                     let newInput1 = replaceValue input [] 12 1 0
                     replaceValue newInput1 [] 2 2 0
 
-                member this.PartTwoInput = this.ReadCommaSeparated()
+                member this.PartTwoInput = this.ReadCommaSeparated
 
             interface IAdventDay with
                 member this.PrintResults = printfn "IntCode: %d" (intCode(this.PartOneInput)).[0];
