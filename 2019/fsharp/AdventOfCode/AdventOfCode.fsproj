@@ -12,11 +12,15 @@
     </Content>
     <Content Include="Days\Day3\input.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>    
+    </Content>
+    <Content Include="Days\Day4\input.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Compile Include="Days\DataStructure.fs" />
     <Compile Include="Days\Day1\Day1.fs" />
     <Compile Include="Days\Day2\Day2.fs" />
     <Compile Include="Days\Day3\Day3.fs" />
+    <Compile Include="Days\Day4\Day4.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 </Project>

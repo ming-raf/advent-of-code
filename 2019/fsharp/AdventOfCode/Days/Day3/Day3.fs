@@ -16,10 +16,12 @@
                 | :? Point as obj -> obj.X = this.X && obj.Y = this.Y
                 | _ -> false
 
+            override this.GetHashCode() = 0
+
             override this.ToString() =
                 "(" + string(this.X) + ", " + string(this.Y) + ")"
 
-        // Use 'long' for potentially big calculation stuff because 
+        // Use 'long' for potentially big calculation stuff because
         // it f*cked my brain up for hours trying to figure out why this is failing
         type Line(point1: Point, point2: Point) =
             member this.Point1: Point = point1

@@ -9,6 +9,8 @@ namespace AdventOfCode.Days
         [<AbstractClass>]
         type AdventDayBase(filePath: string) =
 
+            member this.ReadText = File.ReadAllText filePath
+
             member this.ReadInputLines = seq<int> { for line in File.ReadLines filePath do yield int line }
 
             member this.ReadCommaSeparated = (File.ReadAllText(filePath).Split ',')
