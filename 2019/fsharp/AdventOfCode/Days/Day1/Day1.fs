@@ -19,11 +19,11 @@ namespace AdventOfCode.Days.Day1
 
             interface IAdventDay with
                 member this.PrintResults =
-                    let totalFuel = this.ReadInputLines()
+                    let totalFuel = this.ReadInputLines
                                     |> Seq.sumBy(calculateFuel)
                     printfn "Total fuel: %d" totalFuel
 
-                    let totalFuelofFuel = this.ReadInputLines()
+                    let totalFuelofFuel = this.ReadInputLines
                                           |> Seq.sumBy(calculateFuelofFuel)
                     printfn "Total fuel of fuel: %d" totalFuelofFuel
                     ()
