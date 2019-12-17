@@ -23,9 +23,10 @@
             member this.Point1: Point = point1
             member this.Point2: Point = point2
 
-            member this.A: int = point1.Y - point2.Y
-            member this.B: int = point2.X - point1.X
-            member this.C: int = -((point1.X * point2.Y) - (point2.X * point1.Y))
+            member this.A: int64 = int64(point1.Y) - int64(point2.Y)
+            member this.B: int64 = int64(point2.X) - int64(point1.X)
+
+            member this.C: int64 = -((int64(point1.X) * int64(point2.Y)) - (int64(point2.X) * int64(point1.Y)))
             member this.GetSteps = Math.Abs(point1.X - point2.X) + Math.Abs(point1.Y - point2.Y)
 
             override this.ToString() =
@@ -36,13 +37,18 @@
             member this.Line2: Line = line2
 
             member this.CalculateLineIntersection: Point =
-                let det = (line1.A * line2.B) - (line1.B * line2.A)
-                let detX = (line1.C * line2.B) - (line1.B * line2.C)
-                let detY = (line1.A * line2.C) - (line1.C * line2.A)
+                //printfn "LINE 1: %d %d %d" line1.A line1.B line1.C
+                //printfn "LINE 2: %d %d %d" line2.A line2.B line2.C
 
-                if det <> 0 then
-                    let x = detX / det
-                    let y = detY / det
+                let det: int64 = (line1.A * line2.B) - (line1.B * line2.A)
+                let detX: int64 = (line1.C * line2.B) - (line1.B * line2.C)
+                let detY: int64 = (line1.A * line2.C) - (line1.C * line2.A)
+
+                if int(det) <> 0 then
+                    let x = int(detX / det)
+                    let y = int(detY / det)
+
+                    //printfn "det: %d, detX: %d, detY: %d, x: %d, y: %d" det detX detY x y
 
                     Point(x, y)
                 else raise (NoIntersectionException("Cannot find any intersection"))
@@ -67,7 +73,7 @@
                                   (minY2 <= intersection.Y && intersection.Y <= maxY2) then
                                   intersection.Y else
                                   raise (NoIntersectionException("Intersection not in line segment"))
-
+                    printfn "%A" intersection
                     Point(retX, retY)
                 with
                     | :? NoIntersectionException -> null;
@@ -116,14 +122,17 @@
               let intersections = getIntersections input1 input2
               let t1 = traverse input1
               let t2 = traverse input2
+              //printfn "%A" t1
+              //printfn "%A" t2
+
               let intersections = seq {for i in 0 .. (t1.Length - 2) do
                                           for j in 0 .. (t2.Length - 2) do
                                               let line1 = Line(t1.[i], t1.[i + 1]);
                                               let line2 = Line(t2.[j], t2.[j + 1]);
                                               let intersect = Intersect(line1, line2)
                                               let intersection = intersect.CalculateSegmentIntersection;
+                                              //printfn "%A" intersection
                                               yield intersection }
-
 
               let minDistance = intersections
                                 |> Seq.filter (isNull >> not)
@@ -164,7 +173,7 @@
                 | head::tail -> makeGraph tail (add head acc)
 
             let graph = makeGraph distinctLines []
-            printfn "%A" graph
+            //printfn "%A" graph
 
             let intersections = seq {for i in 0 .. (t1.Length - 2) do
                                         for j in 0 .. (t2.Length - 2) do
@@ -213,7 +222,7 @@
 
             let originEdge = graph |> List.find (fun e -> e.Point = Point(0, 0))
             let ret = dfs originEdge graph []
-            printfn "%A" ret
+            //printfn "%A" ret
 
             // let dfs (edges: List<Edge>) (startEdge: Edge) (acc: List<Line>) =
             //     let rec _dfs (_lines: List<Line>) (_acc: List<Line>) =
@@ -247,7 +256,7 @@
                                        |> Seq.filter (fun point -> point.X <> 0 && point.Y <> 0)
                                        |> Seq.toList
 
-            printfn "%A" segmentIntersections
+            //printfn "%A" segmentIntersections
 
             let isPointInBetween (point1: Point) (point2: Point) (targetPoint: Point) =
                 let distance (a: Point) (b: Point) =
@@ -255,6 +264,7 @@
 
                 (distance point1 targetPoint) + (distance targetPoint point2) = (distance point1 point2)
 
+            // TODO: WHAT IF THERE'S NEGATIVE
             let rec doIt (lines: List<Line>) (intersections: List<Point>) (prev: List<Line>) (acc: List<List<Line>>) =
                 match lines with
                 | [] -> acc |> List.map (List.rev)
@@ -270,10 +280,10 @@
                 | head::tail -> doIt tail intersections (head::prev) acc
 
             let intersects1 = doIt lines1 segmentIntersections [] []
-            printfn "%A" intersects1
+            //printfn "%A" intersects1
 
             let intersects2 = doIt lines2 segmentIntersections [] []
-            printfn "%A" intersects2
+            //printfn "%A" intersects2
 
             let getTotalSteps (intersects: List<List<Line>>) = intersects |> List.map (fun o -> ((o |> List.last).Point2, o |> List.sumBy (fun i -> i.GetSteps)))
 
@@ -281,7 +291,7 @@
             let totals2 = getTotalSteps intersects2
 
             let xx = (totals1 @ totals2) |> List.groupBy ( fun (k, v) -> k )
-            printfn "%A" xx
+            //printfn "%A" xx
 
             let yy = xx |> List.map (fun (g, l) -> l |> List.sumBy (fun (k, v) -> v))
             printfn "%A" yy
