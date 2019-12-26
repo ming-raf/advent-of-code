@@ -24,8 +24,8 @@
     <Compile Include="Days\Day2\Day2.fs" />
     <Compile Include="Days\Day3\Day3.fs" />
     <Compile Include="Days\Day4\Day4.fs" />
-    <Compile Include="Days\Day5\Model.fs" />
-    <Compile Include="Days\Day5\Entry.fs" />
+    <Compile Include="Days\Day5\PartOne.fs" />
+    <Compile Include="Days\Day5\PartTwo.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 </Project>

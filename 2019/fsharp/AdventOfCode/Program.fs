@@ -18,7 +18,12 @@ module Main =
         // let day4 = Day4.Day.Day4("Days\Day4\input.txt")
         // (day4 :> DataStructure.IAdventDay).PrintResults
 
-        let day5 = Day5.Entry.Day5("Days\Day5\input.txt")
-        (day5 :> DataStructure.IAdventDay).PrintResults
+        //let day5 = Day5.Entry.Day5("Days\Day5\input.txt")
+        //(day5 :> DataStructure.IAdventDay).PrintResults
+
+        // let day5PartOne = Day5.PartOne.EntryPoint("Days\Day5\input.txt")
+        // (day5PartOne :> DataStructure.IAdventDay).PrintResults
+        let day5PartTwo = Day5.PartTwo.EntryPoint("Days\Day5\input.txt")
+        (day5PartTwo :> DataStructure.IAdventDay).PrintResults
 
         0
