@@ -11,7 +11,9 @@ namespace AdventOfCode.Days
 
             member this.ReadText = File.ReadAllText filePath
 
-            member this.ReadInputLines = seq<int> { for line in File.ReadLines filePath do yield int line }
+            member this.ReadInputLines castType = File.ReadAllLines(filePath)
+                                                  |> Array.map (castType) 
+                                                  |> Array.toList
 
             member this.ReadCommaSeparated castType = (File.ReadAllText(filePath).Split ',')
                                                       |> Array.map (castType)
