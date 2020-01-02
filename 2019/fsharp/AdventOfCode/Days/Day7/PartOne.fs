@@ -4,9 +4,6 @@ namespace AdventOfCode.Days.Day7
         open System
         open AdventOfCode.Days.DataStructure
 
-        let mutable lastOutput = 0
-        // let logFilePath = """C:\LocalRepo\advent-of-code\2019\fsharp\debug.log"""
-
         let countDigits number = (int) (log10 ((float)number)) + 1;
 
         // Right to left starting from 1
@@ -39,14 +36,12 @@ namespace AdventOfCode.Days.Day7
                     | _ -> (input, prev)
             _skipTo input steps 0 []
 
-        let doStuff (input: List<int>) (opDef: int) (paramDefs: int[]) (diagnosticInput: int) (currentPointer: int): List<int> * int =
+        let doStuff (input: List<int>) (opDef: int) (paramDefs: int[]) (diagnosticInput: int) (currentPointer: int): List<int> * int * int =
             let opDefLength = countDigits opDef
             let op = getDigit opDef 1 + ((getDigit opDef 2) * 10)
             let p1Mode = getDigit opDef 3
             let p2Mode = getDigit opDef 4
             let p3Mode = getDigit opDef 5
-
-            // printfn "%d %d" opDef op
 
             match op with
             | 1 ->
@@ -58,7 +53,7 @@ namespace AdventOfCode.Days.Day7
                                       | (_, _) -> (0, 0)
                 let outValue = paramDefs.[2]
                 let newInput = replaceValue input outValue (fst parameterValues + snd parameterValues)
-                (newInput, 3)
+                (newInput, 3, 0)
             | 2 ->
                 let parameterValues = match (p1Mode, p2Mode) with
                                       | (0, 0) -> (input.[paramDefs.[0]], input.[paramDefs.[1]])
@@ -68,22 +63,19 @@ namespace AdventOfCode.Days.Day7
                                       | (_, _) -> (0, 0)
                 let outValue = paramDefs.[2]
                 let newInput = replaceValue input outValue (fst parameterValues * snd parameterValues)
-                (newInput, 3)
+                (newInput, 3, 0)
             | 3 ->
                 let parameterValues = match (p1Mode, p2Mode) with
                                       | (0, 0) -> (paramDefs.[0], 0)
                                       | (_, _) -> (0, 0)
                 let newInput = replaceValue input (fst parameterValues) diagnosticInput
-                (newInput, 1)
+                (newInput, 1, 0)
             | 4 ->
                 let parameterValues = match (p1Mode, p2Mode) with
                                       | (0, 0) -> (input.[paramDefs.[0]], 0)
                                       | (1, 0) -> (paramDefs.[0], 0)
                                       | (_, _) -> (0, 0)
-                // printfn "OUTPUT: %d" (fst parameterValues)
-                // System.IO.File.AppendAllText(logFilePath, "OUTPUT: " + string(fst parameterValues) + "\n")
-                lastOutput <- fst parameterValues
-                (input, 1)
+                (input, 1, fst parameterValues)
             | 5 ->
                 let parameterValues = match (p1Mode, p2Mode) with
                                       | (0, 0) -> (input.[paramDefs.[0]], input.[paramDefs.[1]])
@@ -93,9 +85,9 @@ namespace AdventOfCode.Days.Day7
                                       | (_, _) -> (0, 0)
                 let (p1, p2) = parameterValues
                 if p1 <> 0 then
-                    (input, p2 - currentPointer - 1)
+                    (input, p2 - currentPointer - 1, 0)
                 else
-                    (input, 2)
+                    (input, 2, 0)
             | 6 ->
                 let parameterValues = match (p1Mode, p2Mode) with
                                       | (0, 0) -> (input.[paramDefs.[0]], input.[paramDefs.[1]])
@@ -105,9 +97,9 @@ namespace AdventOfCode.Days.Day7
                                       | (_, _) -> (0, 0)
                 let (p1, p2) = parameterValues
                 if p1 = 0 then
-                    (input, p2 - currentPointer - 1)
+                    (input, p2 - currentPointer - 1, 0)
                 else
-                    (input, 2)
+                    (input, 2, 0)
             | 7 ->
                 let parameterValues = match (p1Mode, p2Mode) with
                                       | (0, 0) -> (input.[paramDefs.[0]], input.[paramDefs.[1]])
@@ -119,10 +111,10 @@ namespace AdventOfCode.Days.Day7
                 let outValue = paramDefs.[2]
                 if p1 < p2 then
                     let newInput = replaceValue input outValue 1
-                    (newInput, 3)
+                    (newInput, 3, 0)
                 else
                     let newInput = replaceValue input outValue 0
-                    (newInput, 3)
+                    (newInput, 3, 0)
             | 8 ->
                 let parameterValues = match (p1Mode, p2Mode) with
                                       | (0, 0) -> (input.[paramDefs.[0]], input.[paramDefs.[1]])
@@ -135,52 +127,103 @@ namespace AdventOfCode.Days.Day7
                 let outValue = paramDefs.[2]
                 if p1 = p2 then
                     let newInput = replaceValue input outValue 1
-                    (newInput, 3)
+                    (newInput, 3, 0)
                 else
                     let newInput = replaceValue input outValue 0
-                    (newInput, 3)
-            | _ -> (input, 0)
+                    (newInput, 3, 0)
+            | _ -> (input, 0, 0)
 
-        let start (input: List<int>) (diagnosticInput: int) =
+        let intCode (input: List<int>) (diagnosticInputs: List<int>) =
 
-            // System.IO.File.Delete logFilePath
-
-            // printfn "ORIGINAL INPUT: %A" input
-            // printfn "DIAGNOSTIC INPUT: %d" diagnosticInput
-
-            let rec runInstructions (_input: List<int>) (_count: int) (_pointer: int) (_acc: List<int>) =
-                match _input with
-                | [] -> _acc
-                | head::tail when _count <> 0 -> runInstructions tail (_count - 1) (_pointer + 1) _acc
+            let rec runInstructions (input: List<int>) (diagnosticInputs: List<int>) (count: int) (pointer: int) (acc: List<int>) (lastOutput: int) =
+                match input with
+                | [] -> (acc, lastOutput)
+                | head::tail when count <> 0 -> runInstructions tail diagnosticInputs (count - 1) (pointer + 1) acc lastOutput
                 | head::tail -> let op = tailDigits head 2
                                 let opDefSize = countDigits head
 
                                 if opDefSize = 2 && op = 99 then
-                                    _acc
+                                    (acc, lastOutput)
                                 else
                                     let paramDefs = if op = 1 || op = 2 || op = 7 || op = 8 then
-                                                        [| _acc.[_pointer + 1]; _acc.[_pointer + 2]; _acc.[_pointer + 3]; |]
+                                                        [| acc.[pointer + 1]; acc.[pointer + 2]; acc.[pointer + 3]; |]
                                                     elif op = 3 || op = 4 then
-                                                        [| _acc.[_pointer + 1]; |]
+                                                        [| acc.[pointer + 1]; |]
                                                     elif op = 5 || op = 6 then
-                                                        [| _acc.[_pointer + 1]; _acc.[_pointer + 2]; |]
+                                                        [| acc.[pointer + 1]; acc.[pointer + 2]; |]
                                                     else [||]
 
-                                    let (newInput, jumpCount) = doStuff _acc head paramDefs diagnosticInput _pointer
+                                    let (diagnosticInput, newDiagnosticInputs) = if op = 3 && diagnosticInputs.Length > 1 then
+                                                                                    (diagnosticInputs.[0], diagnosticInputs.[1..])
+                                                                                 else
+                                                                                    (diagnosticInputs.[0], diagnosticInputs)
 
-                                    // let dpoint = "POINTER: " + _pointer.ToString() + " OP: " + op.ToString() + " PARAMS: " + String.Join(", ", paramDefs)
-                                    // let dnIn = String.Join(" ", newInput)
-                                    // System.IO.File.AppendAllText(logFilePath, dpoint + "\n" + dnIn + "\n")
-                                    // printfn "POINTER: %d OP: %d" _pointer op
-                                    // printfn "%A" newInput
-                                    let (newTail, newPrev) = skipTo newInput _pointer
+                                    let (newInput, jumpCount, output) = doStuff acc head paramDefs diagnosticInput pointer
+                                    printfn "%A, %d %d input: %d" newInput jumpCount output diagnosticInput
+                                    let (newTail, newPrev) = skipTo newInput pointer
 
-                                    runInstructions newTail (jumpCount) (_pointer + 1) newInput
+                                    runInstructions newTail newDiagnosticInputs (jumpCount) (pointer + 1) newInput output
 
-            let finalInput = runInstructions input 0  0 input
+            runInstructions input diagnosticInputs 0  0 input 0
 
-            printfn "FINAL OUTPUT: %d" lastOutput
-            // printfn "%A" finalInput
+        let rec shiftRight (input: List<string>) (currentShift: int) (maxShift: int) =
+            match input with
+            | [] -> []
+            | head::tail when currentShift = maxShift -> input
+            | head::tail -> shiftRight ((input.[input.Length-1])::input.[..(input.Length-2)]) (currentShift + 1) maxShift
+
+        // let rec getUniqueCombinations (input: List<string>) (size: int) (acc: List<string>): List<string> =
+        //     let rec combine (input: string) (others: List<string>) (nextOthers: List<string>) (size: int) (acc: List<string>): List<string> =
+        //         match others with
+        //         | [] -> combine acc nextOthers (shiftRight nextOthers 0 1) size acc
+        //         | head::tail when (acc |> List.filter (fun x -> x.Length = size)).Length > 0 -> acc
+        //         | head::tail -> combine input tail nextOthers size ((input + head)::acc)
+
+        //     match input with
+        //     | [] -> acc
+        //     | head::tail when head.Length = size -> getUniqueCombinations tail size (head::acc)
+        //     | head::tail -> let combinedValues = combine head tail (shiftRight tail 0 1) size []
+        //                     let combination = getUniqueCombinations combinedValues size acc
+        //                     getUniqueCombinations tail size (combination @ acc)
+
+        let listUniqueCombinations (input: List<'T>) =
+            let rec combine (target: List<'T>) (others: List<'T>) (acc: List<List<'T>>): List<List<'T>> =
+                match others with
+                | [] -> acc
+                | head::tail -> combine target tail ((target @ [head])::acc)
+
+            let rec doStuff (combinations: List<List<'T>>) (acc: List<List<'T>>): List<List<'T>> =
+                match combinations with
+                | [] -> acc
+                | head::tail when head.Length = input.Length -> doStuff tail (head::acc)
+                | head::tail -> let missingValues = input |> List.filter (fun i -> not (head |> List.contains i))
+                                let combinedValues = combine head missingValues []
+                                let newCombinations = doStuff combinedValues []
+
+                                // printfn "%A" newCombinations
+                                doStuff tail (newCombinations @ acc)
+
+            doStuff (input |> List.map (fun x -> [x;])) []
+
+        let rec amplify (input: List<int>) (phaseSettings: List<int>) (prevOutput: int) (acc) =
+            let firstPhaseSetting = if phaseSettings.Length > 0 then phaseSettings.[0] else -1
+            printfn "%A Phase: %d PrevOutput: %d" input firstPhaseSetting prevOutput
+            match phaseSettings with
+            | [] -> acc
+            | head::tail -> let (lastInput, lastOutput) = intCode input (head::[prevOutput])
+                            amplify input tail lastOutput (acc @ [lastOutput])
+
+        let start (input: List<int>) (combinations: List<int>) =
+            let uniqueCombinations = listUniqueCombinations combinations 
+                                     |> List.map (fun innerList -> innerList
+                                                                   |> List.map char
+                                                                   |> List.fold (fun a -> a::[]))
+
+            printfn "Total combinations: %d" uniqueCombinations.Length
+
+            let ret = uniqueCombinations |> List.map (fun c -> amplify c)
+
+            uniqueCombinations
 
         type EntryPoint(filePath) =
             inherit AdventDayBase(filePath)
@@ -188,4 +231,4 @@ namespace AdventOfCode.Days.Day7
             member this.ReadInput = this.ReadCommaSeparated int
 
             interface IAdventDay with
-                member this.PrintResults = start this.ReadInput 5
+                member this.PrintResults = printfn "%A" (start this.ReadInput [0;1;2;3;4;])

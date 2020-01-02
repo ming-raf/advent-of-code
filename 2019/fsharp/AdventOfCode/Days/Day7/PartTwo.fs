@@ -1,4 +1,4 @@
-namespace AdventOfCode.Days.Day6
+namespace AdventOfCode.Days.Day7
 
     module PartTwo =
         open System
